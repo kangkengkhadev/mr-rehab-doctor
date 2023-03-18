@@ -1,0 +1,81 @@
+{% extends 'template.html' %}
+<!--  -->
+{%block title%}Selectpose{%endblock%}
+<!--  -->
+{%block content%}
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/doctorpage/">
+            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            </ul>
+            <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="btn btn-primary mx-2">เพิ่มข้อมูลผู้ป่วย</a>
+            <a class="btn btn-danger mx-2" href="/deld/">ออกจากระบบ</a>
+        </div>
+    </div>
+</nav>
+<h1 class="text-center my-5">เลือกท่ากายภาพบำบัด</h1>
+<div class="container m-auto my-5">
+    <form action="/savechangepose/" method="post" class="">
+        <input type="hidden" name="patient_id" value="{{patient_id}}">
+        <div class="row row-cols-md-5 g-2">
+            {%for p in pose%}
+            <!--  -->
+            {% csrf_token %}
+            <div class="card mx-1">
+                <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+                <div class="card-body">
+                    <h5 class="card-title">{{p.pose}}</h5>
+                    {%if p.detail%}
+                    <p class="card-text">{{p.detail}}</p>
+                    {%endif%}
+                    <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}"><br>
+                    <input type="hidden" id="posesum{{p.id}}" name="posesum[]" value="">
+                    <div id="box{{p.id}}" style="display: none;">
+                        <label for="">จำนวนครั้ง/เซ็ท</label>
+                        <input type="text" name="dopose[]" id="do{{p.id}}" value="0" required>
+                        <label for="">จำนวนเซ็ท</label>
+                        <input type="text" name="countpose[]" id="count{{p.id}}" value="0" required>
+                    </div>
+                </div>
+
+            </div>
+            <!--  -->
+            {%endfor%}
+        </div>
+        <input type="submit" value="บันทึก" class="btn btn-primary form-control my-3 py-2">
+    </form>
+</div>
+{%if had_pose%} {%for i in had_pose%}
+<script>
+    document.getElementById('{{i.id}}').checked = true;
+    document.getElementById('box' + '{{i.id}}').style.display = 'block';
+    document.getElementById('do' + '{{i.id}}').value = '{{i.dopose}}';
+    document.getElementById('count' + '{{i.id}}').value = '{{i.countpose}}';
+</script>
+
+{%endfor%} {%endif%}
+
+<script>
+    function checkbox(id) {
+        var x = document.getElementById(id).checked;
+        if (x != true) {
+            document.getElementById('box' + id).style.display = 'none';
+            document.getElementById('do' + id).value = 0;
+            document.getElementById('count' + id).value = 0;
+
+        } else {
+            document.getElementById('box' + id).style.display = 'block';
+            document.getElementById('do' + id).value = 5;
+            document.getElementById('count' + id).value = 3;
+        }
+        document.getElementById('posesum' + id).value = document.getElementById(id).value + "/" + document.getElementById('count' + id).value + "/" + document.getElementById('do' + id).value
+    }
+</script>
+<!--  -->
+{%endblock%}

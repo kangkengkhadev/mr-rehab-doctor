@@ -1,0 +1,86 @@
+{% extends 'template.html' %}
+<!--  -->
+{%block title%}Selectpose{%endblock%}
+<!--  -->
+{%block content%}
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/doctorpage/">
+            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            </ul>
+            <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="btn btn-primary mx-2">เพิ่มข้อมูลผู้ป่วย</a>
+            <a class="btn btn-danger mx-2" href="/deld/">ออกจากระบบ</a>
+        </div>
+    </div>
+</nav>
+
+{{had_poses}}
+<div class="container m-auto my-5">
+    <form action="/addpatientcase/" method="post" class="">
+        <input type="hidden" name="name" value="{{name}}">
+        <input type="hidden" name="lastname" value="{{lastname}}">
+        <input type="hidden" name="phone" value="{{phone}}">
+        <input type="hidden" name="uid" value="{{doctor_info.uid}}">
+        <input type="hidden" name="dicease" value="{{dicease}}">
+        <input type="hidden" name="general_id" value="{{general_id}}">
+        <input type="hidden" name="month" value="{{month}}">
+        <input type="hidden" name="age" value="{{age}}">
+        <input type="hidden" name="gender" value="{{gender}}">
+        <input type="hidden" name="line_id" value="{{line_id}}">
+        <input type="hidden" name="kin_contact" value="{{kin_contact}}">
+        <input type="hidden" name="gender" value="{{gender}}">
+        <div class="row row-cols-md-5 g-2">
+            {%for p in pose%}
+            <!--  -->
+            {% csrf_token %}
+            <div class="card mx-1">
+                <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+                <div class="card-body">
+                    <h5 class="card-title">{{p.pose}}</h5>
+                    {%if p.detail%}
+                    <p class="card-text">{{p.detail}}</p>
+                    {%endif%}
+                    <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}"><br>
+                    <input type="hidden" id="posesum{{p.id}}" name="posesum[]" value="">
+                    <div id="box{{p.id}}" style="display: none;">
+                        <label for="">จำนวนครั้ง/เซ็ท</label>
+                        <input type="text" name="dopose[]" id="do{{p.id}}" value="0" required>
+                        <label for="">จำนวนเซ็ท</label>
+                        <input type="text" name="countpose[]" id="count{{p.id}}" value="0" required>
+                    </div>
+                </div>
+
+            </div>
+            <!--  -->
+            {%endfor%}
+        </div>
+        <a href="/addpatientdata/?name={{name}}&lastname={{lastname}}&phone={{phone}}&uid={{uid}}&dicease={{dicease}}&general_id={{general_id}}&month={{month}}&returned=1&gender={{gender}}&line_id={{line_id}}&kin_contact={{kin_contact}}&age={{age}}" class="btn btn-info form-control mt-3 py-2"
+            style="color: white;">ย้อนกลับ</a>
+        <input type="submit" value="บันทึก" class="btn btn-primary form-control my-3 py-2">
+    </form>
+</div>
+
+<script>
+    function checkbox(id) {
+        var x = document.getElementById(id).checked;
+        if (x != true) {
+            document.getElementById('box' + id).style.display = 'none';
+            document.getElementById('do' + id).value = 0;
+            document.getElementById('count' + id).value = 0;
+
+        } else {
+            document.getElementById('box' + id).style.display = 'block';
+            document.getElementById('do' + id).value = 5;
+            document.getElementById('count' + id).value = 3;
+        }
+        document.getElementById('posesum' + id).value = document.getElementById(id).value + "/" + document.getElementById('count' + id).value + "/" + document.getElementById('do' + id).value
+    }
+</script>
+<!--  -->
+{%endblock%}

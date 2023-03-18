@@ -1,0 +1,188 @@
+{% extends 'template.html' %}
+<!--  -->
+{%block title%}Info{%endblock%}
+<!--  -->
+{%block content%}
+<style>
+    .liney {
+        font-size: 20px;
+        padding: 0 50px;
+        border-right: 1px solid rgb(97, 97, 97);
+    }
+    
+    .liney:first-child {
+        padding-left: 0;
+    }
+</style>
+<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            </ul>
+            <a href="/changepatientinfo/?pid={{info.patient_id}}" class="btn btn-info mx-2 text-light">แก้ไขข้อมูลผู้ป่วย</a>
+            <a href="/doctorpage" class="btn btn-primary mx-2">กลับหน้าหลัก</a>
+        </div>
+    </div>
+</nav>
+
+
+<header class="container-fluid" style="background-color:rgb(217, 252, 232)">
+    <div class="">
+        <div class="px-4 py-4 d-flex ">
+            <div class="personal liney">
+                ชื่อ : {{info.name}}<br> นามสกุล : {{info.lastname}}<br> เพศ : {{info.gender}}<br>
+            </div>
+            <div class="decinfo liney">
+                อายุ : {{info.age}} <br> ป่วยจากโรค : {{info.dicease}}<br> ระยะเวลาในการรักษา : {{info.month}} เดือน
+            </div>
+            <div class="contact liney">
+                เบอร์โทรศัพท์ผู้ป่วย : {{info.phone}}<br> ID_LINE : {{info.line_id}} <br> เบอร์ติดต่อญาติ : {{info.kin_contact}}
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<main class='p-4'>
+
+    <div class="float-start" style="width:30%;">
+        <h2 class="text-center mb-3">ท่ากายภาพบำบัด</h2>
+        <div class="float-start" style="width:100%;height:550px; overflow-y:scroll">
+
+            {%for i in info.poses%}
+            <!--  -->
+            <div class="card me-5 px-5 py-4 my-3">
+                <h3 class="float-start w-50">{{i.pose}}</h3>
+                <h4 class="float-end w-50">{{i.dopose}}ครั้ง/{{i.countpose}}เซ็ท</h4>
+            </div>
+            <!--  -->
+            {%endfor%}
+        </div>
+        <a href="/changepose/?patient_id={{info.patient_id}}" class="btn btn-info form-control py-2 my-4 text-light">แก้ไข</a>
+    </div>
+    <div class="">
+        {%if rehabinfo == 0%}
+        <h2 class="text-center">ยังไม่มีข้อมูลกายภาพบำบัด</h2>
+        {%else%}
+        <div class="">
+            <h2 class="text-center mb-3">ข้อมูลกายภาพบำบัดของเดือน{{month_name}} </h2>
+            <form action="/patientinfo" style="font-size: 15px;" method="get">
+                <input type="hidden" name="pid" value="{{pid}}">
+                <div class="d-flex w-25 mx-auto">
+                    <select name="selectmonth" class="form-select">
+                        <option value="{{thismonth}}">{{thismonth}}</option>
+                        {%for i in month_id%}
+                      <option value="{{i}}">{{i}}</option>
+                      {%endfor%}
+                    </select>
+                    <input type="submit" value="เลือกเดือน" class="btn btn-primary mx-2">
+                </div>
+            </form>
+        </div>
+        {%endif%}
+        <canvas id="sumChart" style="width:100%;max-width:1200px;min-width:600px; margin: 20px auto;height: 550px;margin-bottom: 0px;"></canvas>
+    </div>
+</main>
+<div class="deep py-2 px-5">
+    <br><br>
+    <h2 class="text-center">ข้อมูลของท่าแต่ละท่า</h2>
+    <br>
+    <hr>
+    <div id="subpose" class="text-center mt-5" style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 3rem;">
+
+    </div>
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+</script>
+<script type='text/javascript'>
+    let sum_x = JSON.parse('{{evo_date_day|escapejs}}');
+    let sum_y = JSON.parse('{{sum_evo_in_day|escapejs}}');
+    let detail = JSON.parse('{{subclass_evo_in_day|escapejs}}');
+    index_g = 0
+    for (const [key, value] of Object.entries(detail)) {
+        console.log(key);
+        index_g += 1;
+        let dive = document.createElement("div");
+        let x = document.createElement("CANVAS");
+        let x_title = document.createElement("h3");
+        dive.id = 'pose' + index_g.toString()
+        x_title.textContent = key;
+        x.id = index_g.toString()
+        x_title.style = 'margin-bottom:0px;'
+        x.style = "max-width:100%;margin: 20px auto;height: 350px;margin-bottom: 0px;"
+        document.getElementById('subpose').appendChild(dive);
+        document.getElementById('pose' + index_g.toString()).appendChild(x_title);
+        document.getElementById('pose' + index_g.toString()).appendChild(x);
+        new Chart(index_g.toString(), {
+            type: "line",
+            data: {
+                labels: sum_x,
+                datasets: [{
+                    data: value
+                }]
+            },
+            options: {
+                legend: {
+                    display: false
+
+                },
+                title: {
+                    display: true,
+                    text: "แสดงร้อยละของจำนวนครั้งการทำกายภาพบำบัดที่ได้รับมอบหมายในแต่ละวันตลอด1เดือน"
+                },
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        ticks: {
+                            beginAtZero: true,
+                            steps: 10,
+                            stepValue: 5,
+                            max: 100
+                        }
+                    }]
+                }
+            }
+        });
+    }
+
+
+    new Chart("sumChart", {
+        type: "line",
+        data: {
+            labels: sum_x,
+            datasets: [{
+                data: sum_y
+            }]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                text: "แสดงร้อยละของจำนวนครั้งการทำกายภาพบำบัดที่ได้รับมอบหมายในแต่ละวันตลอด1เดือน"
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        beginAtZero: true,
+                        steps: 10,
+                        stepValue: 5,
+                        max: 100
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{%endblock%}
