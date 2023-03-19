@@ -57,9 +57,9 @@
 
             {%for i in info.poses%}
             <!--  -->
-            <div class="card me-5 px-5 py-4 my-3">
-                <h3 class="float-start w-50">{{i.pose}}</h3>
-                <h4 class="float-end w-50">{{i.dopose}}ครั้ง/{{i.countpose}}เซ็ท</h4>
+            <div class="card me-5 px-5 py-4 my-2">
+                <h4 class="float-start w-75">{{i.pose}}</h3>
+                <h5 class="float-end w-75">{{i.dopose}}ครั้ง/{{i.countpose}}เซ็ท</h4>
             </div>
             <!--  -->
             {%endfor%}
@@ -86,16 +86,15 @@
             </form>
         </div>
         {%endif%}
-        <canvas id="sumChart" style="width:100%;max-width:1200px;min-width:600px; margin: 20px auto;height: 550px;margin-bottom: 0px;"></canvas>
+        <canvas id="sumChart" style="max-width:890px; margin: 20px auto;height: 500px;margin-bottom: 0px;"></canvas>
     </div>
 </main>
 <div class="deep py-2 px-5">
-    <br><br>
+    <br><br><br>
     <h2 class="text-center">ข้อมูลของท่าแต่ละท่า</h2>
     <br>
     <hr>
     <div id="subpose" class="text-center mt-5" style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 3rem;">
-
     </div>
 </div>
 

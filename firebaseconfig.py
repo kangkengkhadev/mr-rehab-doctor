@@ -1,7 +1,7 @@
 import pyrebase
 import firebase_admin 
 from firebase_admin import credentials,firestore
-cred = credentials.Certificate("./rehabtesting-9beaf-firebase-adminsdk-xn4fb-c5da403800.json")
+cred = credentials.Certificate("rehabtesting-9beaf-firebase-adminsdk-xn4fb-c5da403800.json")
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 config = {
