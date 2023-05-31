@@ -72,13 +72,17 @@ def postsignUp(request):
             lastname = request.POST.get('lastname')
             phone = request.POST.get('phone')
             role = request.POST.get('role')
-            data = {'uid':uid,'name':name,'lastname':lastname,'phone':phone,'role':role}
-            db.collection('doctor').add(data)
+            line = request.POST.get('line')
+            hospital = request.POST.get('hospital')
+            data = {'uid':uid,'name':name,'lastname':lastname,'phone':phone,'role':role,'email':email,'line_id':line,'hospital':hospital}
+            print('ddddd')
+            db.collection('doctor').document(uid).set(data)
+            # print('ddddddddddddd')
             request.session['doctor_id'] = uid
             request.session['name'] = name
             request.session['lastname'] = lastname
             return redirect('/doctorpage')
-      except:
+      except Exception as error:
             return render(request, "register.html",{'message':message})
 
 def patientdata(request):
@@ -166,12 +170,14 @@ def addpatientcase(request):
                   for p in poses_indb:
                         if p['pose'] == i['pose']:
                               i['id'] = p['id']
+                              i['detail'] = p['detail']
+                              i['link_img'] = p['link-img']
             status = 'waiting'
             while len(check_patient_id) > 0:
                   patient_id = get_random_string()
                   check_patient_id = db.collection('patient').where('patient_id','==',patient_id).get()
             data = {'dicease':dicease,'month':month,'status':status,'name':name, 'patient_id':patient_id,'lastname':lastname,'poses':pose,'phone':phone,'general_id':general_id,'doctor_id':uid,'age':age,'line_id':line_id,'gender':gender,'kin_contact':kin_contact}
-            db.collection('patient').add(data)
+            db.collection('patient').document(patient_id).set(data)
             return redirect('/doctorpage')
       except:
             return redirect('/doctorpage')

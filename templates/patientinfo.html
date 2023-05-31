@@ -49,26 +49,36 @@
 </header>
 
 
-<main class='p-4'>
-
-    <div class="float-start" style="width:30%;">
+<main class='p-4 d-flex'>
+    <div class="me-4" style="width:30%;">
         <h2 class="text-center mb-3">ท่ากายภาพบำบัด</h2>
-        <div class="float-start" style="width:100%;height:550px; overflow-y:scroll">
+        <div class="float-start" style="width:100%;height:450px; overflow-y:scroll">
 
             {%for i in info.poses%}
             <!--  -->
-            <div class="card me-5 px-5 py-4 my-2">
+            <div class="card me-5 px-5 py-4 my-2 w-100">
                 <h4 class="float-start w-75">{{i.pose}}</h3>
                 <h5 class="float-end w-75">{{i.dopose}}ครั้ง/{{i.countpose}}เซ็ท</h4>
             </div>
             <!--  -->
             {%endfor%}
         </div>
-        <a href="/changepose/?patient_id={{info.patient_id}}" class="btn btn-info form-control py-2 my-4 text-light">แก้ไข</a>
+        <a href="/changepose/?patient_id={{info.patient_id}}" class="btn btn-info form-control py-2 my-4 text-light mt-5">แก้ไข</a>
     </div>
     <div class="">
         {%if rehabinfo == 0%}
-        <h2 class="text-center">ยังไม่มีข้อมูลกายภาพบำบัด</h2>
+        <h3 class="text-center">ไม่มีข้อมูลในเดือนนี้</h3>
+        <form action="/patientinfo" style="font-size: 15px;" method="get">
+            <input type="hidden" name="pid" value="{{pid}}">
+            <div class="d-flex w-25 mx-auto">
+                <select name="selectmonth" class="form-select">
+                    {%for i in month_id%}
+                  <option value="{{i}}">{{i}}</option>
+                  {%endfor%}
+                </select>
+                <input type="submit" value="เลือกเดือน" class="btn btn-primary mx-2">
+            </div>
+        </form>
         {%else%}
         <div class="">
             <h2 class="text-center mb-3">ข้อมูลกายภาพบำบัดของเดือน{{month_name}} </h2>
@@ -89,23 +99,23 @@
         <canvas id="sumChart" style="max-width:890px; margin: 20px auto;height: 500px;margin-bottom: 0px;"></canvas>
     </div>
 </main>
-<div class="deep py-2 px-5">
-    <br><br><br>
+{%if rehabinfo != 0%}
+<div class="deep py-2 px-5 w-100">
     <h2 class="text-center">ข้อมูลของท่าแต่ละท่า</h2>
     <br>
     <hr>
     <div id="subpose" class="text-center mt-5" style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 3rem;">
     </div>
 </div>
-
-
-
+{%endif%}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
 </script>
 <script type='text/javascript'>
     let sum_x = JSON.parse('{{evo_date_day|escapejs}}');
     let sum_y = JSON.parse('{{sum_evo_in_day|escapejs}}');
+    console.log(sum_x, sum_y)
     let detail = JSON.parse('{{subclass_evo_in_day|escapejs}}');
+    // console.log(datail);
     index_g = 0
     for (const [key, value] of Object.entries(detail)) {
         console.log(key);

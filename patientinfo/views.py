@@ -4,6 +4,7 @@ from json import dumps
 from datetime import date
 # Create your views here.
 
+# convert month
 def convertm2name(month):
     mont_dict ={'01':'มกราคม',
      '02':'กุมภาพันธ์',
@@ -18,83 +19,16 @@ def convertm2name(month):
      '11':'พฤษจิกายน',
      '12':'ธันวาคม'}
     return mont_dict[month[3:5]]
-
-def get_sum_info_rehab_evo(muldoc_incol,month):
-        rehab_info = muldoc_incol[0].document(month).get().to_dict()
-                # print(rehab_info)
-        days = []
-        evo_in_day = []
-        for day in rehab_info:
-                # print(rehab_info[day])
-            evos = []
-            cpose = 0
-            for ppose in rehab_info[day]:
-                    # print(rehab_info[day][ppose])
-                c = 0
-                cpose += 1
-                for i,v in enumerate(rehab_info[day][ppose][1:]):
-                    c += v 
-                sums = c/(i+1)
-                evos.append(int((sums/rehab_info[day][ppose][0])*100))
-            evo = sum(evos)/cpose
-            days.append(day)
-            evo_in_day.append(evo)
-            dict_evo = {}
-            for i,key in enumerate(days):
-                dict_evo[key] = evo_in_day[i]
-            date_day = [i for i in range(32)]
-            real_evo = []
-            for i in date_day:
-                if str(i) in dict_evo.keys():
-                    real_evo.append(dict_evo[str(i)])
-                else:
-                    real_evo.append(0)    
-        return date_day,real_evo
-    
-    
-def get_deep_info_rehab(muldoc_incol,month): 
-    rehab_info = muldoc_incol[0].document(month).get().to_dict()
-    dict_day_pose = dict()
-    for day in rehab_info: 
-        dict_poseid_detail = dict()
-        for pose in rehab_info[day]:
-            sum_do_pose = 0
-            for i_detail_pose,detail_pose in enumerate(rehab_info[day][pose]):
-                if i_detail_pose == 0:
-                    must_do_post = detail_pose 
-                else:
-                    sum_do_pose += detail_pose
-            percent = (sum_do_pose/(len(rehab_info[day][pose])-1))/must_do_post
-            dict_poseid_detail[pose] = int(percent*100)
-        dict_day_pose[day] = dict_poseid_detail 
-    post_id_all = set()
-    for i in dict_day_pose:
-        for j in dict_day_pose[i]:
-            post_id_all.update(j)
-    post_id_all = list( post_id_all)
-    poses_evo_in_day = dict()
-    for i in post_id_all:
-        date_sum = []
-        for day_in_date in range(0,32):
-            try:
-                date_sum.append(dict_day_pose[str(day_in_date)][str(i)])
-                        
-            except:
-                date_sum.append(0)
-        poses_evo_in_day[i] = date_sum
-    pose_from_db = db.collection('pose').get()
-    pose_from_db = [i.to_dict() for i in pose_from_db]
-    pose_name_and_info_rahab = dict()
-    for i in pose_from_db:
-        try: 
-            pose_name_and_info_rahab[i['pose']] = poses_evo_in_day[str(i['id'])]
-        except:
-            pass
-    return pose_name_and_info_rahab  
-
-
+def get_posename_id(id):
+    doc_ref = db.collection('pose').where('id','==',int(id)).get()
+    info = [i for i in doc_ref]
+    infodict = [i.to_dict() for i in info]
+    return infodict[0]['pose']
+# patient page render funtion
 def patientpage(request):
+    # check session
     if 'doctor_id' in request.session:
+        print('have doctor id')
         if request.method == 'GET' and 'selectmonth' in request.GET:
             month = str(request.GET.get('selectmonth'))
         else:
@@ -103,26 +37,85 @@ def patientpage(request):
         pid =  request.GET.get('pid')
         info = db.collection('patient').where('patient_id','==',pid).where('status','==','active').where('doctor_id','==',doctor_id).get()
         info = [i for i in info]
+        # infodict is general info of user 
         infodict = [i.to_dict() for i in info]
-        rehab_col = db.collection('patient').document(info[0].id).collections() 
-        try:   
-            muldoc_incol = [i for i in rehab_col]
-            month_id = [i.id for i in muldoc_incol[0].get()]
-            month_id.remove(month)
+        # get doc info from db 
+        doc_ref = db.collection('patient').document(pid)
+        doc = doc_ref.get()
+        # try to get rehabinfo from db and preprocess 
+        try:
+            rehab_info = doc.to_dict()['rehab_info']
+            dump_month = [str(i) for i in range(1,32)]
+            for i in range(len(dump_month)):
+                if int(dump_month[i]) < 10:
+                    dump_month[i] = '0'+ dump_month[i]
+            dump_evo_month = [0 for i in range(1,32)]
+            dump_model = dict(zip(dump_month,dump_evo_month))
+            subpose_info  = []
+            for i in rehab_info:
+                 if i[2:7] == month:
+                    for j in rehab_info[i]:
+                        subpose_info.append(get_posename_id(j))
+            subpose_info = list(set(subpose_info))
+            print(subpose_info)
+            subpose_dict = dict()
+            for i in subpose_info:
+                 subpose_dict[i] = [0 for i in range(1,32)]
+            print(subpose_dict)
+            # loop in month 
+            new_info = dict()
+            for i in rehab_info:
+                print('day is',i[:7])
+                # loop in day 
+                day_count = 0
+                num = 0
+                for key in rehab_info[i]:
+                    print('key',key)
+                    num+=1
+                    count = 0
+                    dis = 0
+                    for ipose,pose in enumerate(rehab_info[i][key]):
+                        if ipose == 0:
+                            dis = pose
+                            continue
+                        count += pose 
+                    if month == i[2:7]: 
+                        subpose_dict[get_posename_id(key)][int(i[-2:])-1] = int((count/(len(rehab_info[i][key])-1)/dis)*100)
+                        print('pose',key,int((count/(len(rehab_info[i][key])-1)/dis)*100))
+                    day_count+=count/(len(rehab_info[i][key])-1)/dis
+                new_info[i] = (int((day_count/num)*100))
+            print(subpose_dict)
+            for i in new_info:
+                if i[2:7] == month:
+                    print(i[8:10])
+                    dump_model[i[8:10]] = new_info[i]
+            print(dump_model)
         except:
+            print(['case 2'])
+            dump_month = [str(i) for i in range(1,32)]
+            for i in range(len(dump_month)):
+                if int(dump_month[i]) < 10:
+                    dump_month[i] = '0'+ dump_month[i]
+            dump_model = dict()
+            for i in dump_month:
+                 dump_model[i] = 0
+        try:
+            # in case have rehab_info in this month 
+            poses_evo_in_day = []
+            month_id = list(set(map(lambda x:x[2:7],rehab_info.keys())))   
+            month_id.remove(month)
+            # print([int(i) for i in dump_model.keys()]) 
+            return render(request,'patientinfo.html',{'info':infodict[0],'subclass_evo_in_day':dumps(subpose_dict),'evo_date_day':dumps([int(i) for i in dump_model.keys()]), 'sum_evo_in_day':dumps(list(dump_model.values())),'month_id':month_id,'thismonth':month,'pid':pid,'month_name':convertm2name(month)})
+        except:
+            # if dont have rehab_info in ths month  
             rehabinfo = 0
-            return render(request,'patientinfo.html',{'info':infodict[0],'rehabinfo':rehabinfo,'evo_date_day':dumps([i for i in range(0,32)]), 'evo_in_day':dumps([0 for i in range(0,32)])}) 
-        
-        if muldoc_incol != []:
-            poses_evo_in_day  = get_deep_info_rehab(muldoc_incol,month)
-            date_day,real_evo = get_sum_info_rehab_evo(muldoc_incol,month)     
-            return render(request,'patientinfo.html',{'info':infodict[0],'evo_date_day':dumps(date_day), 'sum_evo_in_day':dumps(real_evo),'subclass_evo_in_day':dumps(poses_evo_in_day),'month_id':month_id,'thismonth':month,'pid':pid,'month_name':convertm2name(month)})
-        else:
-            rehabinfo = 0
-            return render(request,'patientinfo.html',{'info':infodict[0],'rehabinfo':rehabinfo,'evo_date_day':dumps([i for i in range(0,32)]), 'evo_in_day':dumps([0 for i in range(0,32)])}) 
+            return render(request,'patientinfo.html',{'info':infodict[0],'month_id':month_id,'rehabinfo':rehabinfo,'evo_date_day':dumps([i for i in range(0,32)]),'pid':pid ,'evo_in_day':dumps([0 for i in range(0,32)])}) 
+    # if dont has session redirect to doctorpage
     else:
+        print('dont have doctor id')
         return redirect('/doctorpage')
     
+# change pose in patient_page function
 def changepose(request):
       try:  
             if 'doctor_id' in request.session:
@@ -148,8 +141,7 @@ def changepose(request):
                   return redirect('/login/')
       except:
             return redirect('/doctorpage')
-        
-        
+               
 def savechangepose(request):
       try:
             doctor_id = request.session['doctor_id']
@@ -167,12 +159,16 @@ def savechangepose(request):
                   for p in poses_indb:
                         if p['pose'] == i['pose']:
                               i['id'] = p['id']
+                              i['detail'] = p['detail']
+                              i['link_img'] = p['link-img']
             key = doc[0].id
             db.collection('patient').document(key).update({'poses':pose})
             
             return redirect('/patientinfo/?pid='+patient_id)
       except:
             return redirect('/doctorpage')
+      
+# change patient_info 
 def changepatientinfo(request):
     if 'doctor_id' in request.session and ( request.method == 'GET' and 'pid' in request.GET): 
         pid = request.GET.get('pid')
@@ -181,6 +177,8 @@ def changepatientinfo(request):
         return render(request,'changepatientinfo.html',{'info':infodict[0]})
     else:
         return redirect('/doctorpage')
+    
+
 def savechangepinfo(request):
     if 'doctor_id' in request.session: 
         name = request.POST.get('name')
