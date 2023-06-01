@@ -107,7 +107,7 @@ def patientpage(request):
             # print([int(i) for i in dump_model.keys()]) 
             return render(request,'patientinfo.html',{'info':infodict[0],'subclass_evo_in_day':dumps(subpose_dict),'evo_date_day':dumps([int(i) for i in dump_model.keys()]), 'sum_evo_in_day':dumps(list(dump_model.values())),'month_id':month_id,'thismonth':month,'pid':pid,'month_name':convertm2name(month)})
         except:
-            # if dont have rehab_info in ths month  
+            month_id = list(set(map(lambda x:x[2:7],rehab_info.keys())))   
             rehabinfo = 0
             return render(request,'patientinfo.html',{'info':infodict[0],'month_id':month_id,'rehabinfo':rehabinfo,'evo_date_day':dumps([i for i in range(0,32)]),'pid':pid ,'evo_in_day':dumps([0 for i in range(0,32)])}) 
     # if dont has session redirect to doctorpage
