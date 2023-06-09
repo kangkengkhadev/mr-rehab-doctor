@@ -19,11 +19,13 @@ def convertm2name(month):
      '11':'พฤษจิกายน',
      '12':'ธันวาคม'}
     return mont_dict[month[3:5]]
+# get posename from id
 def get_posename_id(id):
     doc_ref = db.collection('pose').where('id','==',int(id)).get()
     info = [i for i in doc_ref]
     infodict = [i.to_dict() for i in info]
     return infodict[0]['pose']
+
 # patient page render funtion
 def patientpage(request):
     # check session
@@ -69,6 +71,7 @@ def patientpage(request):
                 # loop in day 
                 day_count = 0
                 num = 0
+                # loop in pose
                 for key in rehab_info[i]:
                     print('key',key)
                     num+=1
@@ -84,14 +87,15 @@ def patientpage(request):
                         print('pose',key,int((count/(len(rehab_info[i][key])-1)/dis)*100))
                     day_count+=count/(len(rehab_info[i][key])-1)/dis
                 new_info[i] = (int((day_count/num)*100))
-            print(subpose_dict)
+            print('sss',new_info)
+            # print(subpose_dict)
             for i in new_info:
                 if i[2:7] == month:
                     print(i[8:10])
                     dump_model[i[8:10]] = new_info[i]
-            print(dump_model)
+            # print(dump_model)
         except:
-            print(['case 2'])
+            # in case cant get info from db 
             dump_month = [str(i) for i in range(1,32)]
             for i in range(len(dump_month)):
                 if int(dump_month[i]) < 10:
@@ -107,6 +111,7 @@ def patientpage(request):
             # print([int(i) for i in dump_model.keys()]) 
             return render(request,'patientinfo.html',{'info':infodict[0],'subclass_evo_in_day':dumps(subpose_dict),'evo_date_day':dumps([int(i) for i in dump_model.keys()]), 'sum_evo_in_day':dumps(list(dump_model.values())),'month_id':month_id,'thismonth':month,'pid':pid,'month_name':convertm2name(month)})
         except:
+            # in case dont have rehab_info in this month
             month_id = list(set(map(lambda x:x[2:7],rehab_info.keys())))   
             rehabinfo = 0
             return render(request,'patientinfo.html',{'info':infodict[0],'month_id':month_id,'rehabinfo':rehabinfo,'evo_date_day':dumps([i for i in range(0,32)]),'pid':pid ,'evo_in_day':dumps([0 for i in range(0,32)])}) 
@@ -161,6 +166,7 @@ def savechangepose(request):
                               i['id'] = p['id']
                               i['detail'] = p['detail']
                               i['link_img'] = p['link-img']
+                              i['tracking'] = p['tracking']
             key = doc[0].id
             db.collection('patient').document(key).update({'poses':pose})
             
