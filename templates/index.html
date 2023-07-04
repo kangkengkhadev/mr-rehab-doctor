@@ -20,7 +20,54 @@
     </div>
 </nav>
 <div class="w-100 px-5">
-    <h1 class="text-center my-5">รายชื่อผู้ป่วย</h1>
+    <h2 class="text-center my-5 mb-3">รายชื่อผู้ป่วย</h2>
+    <div class="d-flex justify-content-center my-5 mt-4">
+        <form action="/doctorpage" method="get" class="form-inline d-flex justify-content-between">
+            <input name="search" style="width:420px" class="form-control mr-sm-2" type="search" placeholder="ค้นหาจากชื่อ รหัสการรักษา หรือ รหัสประจำตัวผู้ป่วย " aria-label="Search">
+            <input class="btn btn-primary my-2 my-sm-0 ms-1" type="submit" value="ค้นหา"/>
+        </form>
+    </div>
+    {%if request.GET.search%}
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {%for mem in data%}
+        <!--  -->
+        {% csrf_token %}
+        <!--  -->
+        {%if mem.status == 'active'%}
+        {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id%}
+        <a href="/patientinfo/?pid={{mem.patient_id}}" style="text-decoration: none;color:black;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
+                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
+                    <h5 class="card-title" style="font-size:18px">สถานะ: ระหว่างการทำกายภาพบำบัด</h5>
+                    <h5 class="card-title" style="font-size:18px"></h5>
+                </div>
+            </div>
+        </a>
+        {%endif%}
+        {%elif mem.status != 'active'%}
+        {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id%}
+        <a href="/doctorpage/" class="text-secondary" style="text-decoration: none;color:black;">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
+                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
+                    <h5 class="card-title" style="font-size:18px">สถานะ: รอการดำเนินการ</h5>
+                    <h5 class="card-title" style="font-size:18px"></h5>
+                </div>
+            </div>
+        </a>
+        {%endif%}
+        {%endif%}
+        <!--  -->
+        {%endfor%}
+    </div>
+    {%else%}
     <div class="row row-cols-1 row-cols-md-4 g-4">
         {%for mem in data%}
         <!--  -->
@@ -30,12 +77,12 @@
         <a href="/patientinfo/?pid={{mem.patient_id}}" style="text-decoration: none;color:black;">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title">รหัสบัตรประจำตัวประชาชน: {{mem.general_id}}</h5>
-                    <h5 class="card-title">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title">สถานะ: ระหว่างการทำกายภาพบำบัด</h5>
-                    <h5 class="card-title"></h5>
+                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
+                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
+                    <h5 class="card-title" style="font-size:18px">สถานะ: ระหว่างการทำกายภาพบำบัด</h5>
+                    <h5 class="card-title" style="font-size:18px"></h5>
                 </div>
             </div>
         </a>
@@ -43,12 +90,12 @@
         <a href="/doctorpage/" class="text-secondary" style="text-decoration: none;color:black;">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title">รหัสบัตรประจำตัวประชาชน: {{mem.general_id}}</h5>
-                    <h5 class="card-title">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title">สถานะ: รอการดำเนินการ</h5>
-                    <h5 class="card-title"></h5>
+                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
+                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
+                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
+                    <h5 class="card-title" style="font-size:18px">สถานะ: รอการดำเนินการ</h5>
+                    <h5 class="card-title" style="font-size:18px"></h5>
                 </div>
             </div>
         </a>
@@ -56,6 +103,8 @@
         <!--  -->
         {%endfor%}
     </div>
+    {%endif%}
+    
 </div>
 
 

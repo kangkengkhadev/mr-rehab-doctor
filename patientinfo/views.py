@@ -165,7 +165,7 @@ def savechangepose(request):
                         if p['pose'] == i['pose']:
                               i['id'] = p['id']
                               i['detail'] = p['detail']
-                              i['link_img'] = p['link-img']
+                              i['link_img'] = p['link_img']
                               i['tracking'] = p['tracking']
             key = doc[0].id
             db.collection('patient').document(key).update({'poses':pose})
@@ -196,9 +196,9 @@ def savechangepinfo(request):
         line_id = request.POST.get('line_id')
         gender = request.POST.get('gender')
         kin_contact = request.POST.get('kin_contact')
-        general_id = request.POST.get('general_id')
+        hospital_number = request.POST.get('hospital_number')
         month = request.POST.get('month')
-        data = {'dicease':dicease,'month':month,'name':name,'lastname':lastname,'phone':phone,'general_id':general_id,'age':age,'line_id':line_id,'gender':gender,'kin_contact':kin_contact}
+        data = {'dicease':dicease,'month':month,'name':name,'lastname':lastname,'phone':phone,'hospital_number':hospital_number,'age':age,'line_id':line_id,'gender':gender,'kin_contact':kin_contact}
         info_id= db.collection('patient').where('patient_id','==',pid).get()
         info = [i.id for i in info_id]
         db.collection('patient').document(info[0]).update(data)

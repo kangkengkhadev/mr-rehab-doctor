@@ -28,7 +28,7 @@
         <input type="hidden" name="phone" value="{{phone}}">
         <input type="hidden" name="uid" value="{{doctor_info.uid}}">
         <input type="hidden" name="dicease" value="{{dicease}}">
-        <input type="hidden" name="general_id" value="{{general_id}}">
+        <input type="hidden" name="hospital_number" value="{{hospital_number}}">
         <input type="hidden" name="month" value="{{month}}">
         <input type="hidden" name="age" value="{{age}}">
         <input type="hidden" name="gender" value="{{gender}}">
@@ -41,14 +41,17 @@
             {% csrf_token %}
             <div class="card mx-1">
                 <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-                <div class="card-body">
+                <div class="card-body text-center" >
                     <h5 class="card-title">{{p.pose}}</h5>
                     {%if p.detail%}
+                    
+                    <img class="my-3" src={{p.link_img}} width="150" height="150" />
                     <p class="card-text">{{p.detail}}</p>
                     {%endif%}
                     <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}"><br>
                     <input type="hidden" id="posesum{{p.id}}" name="posesum[]" value="">
                     <div id="box{{p.id}}" style="display: none;">
+                        
                         <label for="">จำนวนครั้ง/เซ็ท</label>
                         <input type="text" name="dopose[]" id="do{{p.id}}" value="0" required>
                         <label for="">จำนวนเซ็ท</label>
@@ -60,7 +63,7 @@
             <!--  -->
             {%endfor%}
         </div>
-        <a href="/addpatientdata/?name={{name}}&lastname={{lastname}}&phone={{phone}}&uid={{uid}}&dicease={{dicease}}&general_id={{general_id}}&month={{month}}&returned=1&gender={{gender}}&line_id={{line_id}}&kin_contact={{kin_contact}}&age={{age}}" class="btn btn-info form-control mt-3 py-2"
+        <a href="/addpatientdata/?name={{name}}&lastname={{lastname}}&phone={{phone}}&uid={{uid}}&dicease={{dicease}}&hospital_number={{hospital_number}}&month={{month}}&returned=1&gender={{gender}}&line_id={{line_id}}&kin_contact={{kin_contact}}&age={{age}}" class="btn btn-info form-control mt-3 py-2"
             style="color: white;">ย้อนกลับ</a>
         <input type="submit" value="บันทึก" class="btn btn-primary form-control my-3 py-2">
     </form>

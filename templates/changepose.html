@@ -32,6 +32,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{p.pose}}</h5>
                     {%if p.detail%}
+                    <img class="my-3" src={{p.link_img}} width="150" height="150" />
                     <p class="card-text">{{p.detail}}</p>
                     {%endif%}
                     <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}"><br>
