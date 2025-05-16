@@ -1,37 +1,166 @@
 {% extends 'template.html' %}
-<!--  -->
-{%block title%}Login{%endblock%}
-<!--  -->
-{%block content%}
-<div id="login" style="margin-top: 10%;">
-    <div class="container-md my-5">
-        <div id="login-row" class="row justify-content-center align-items-center">
-            <div id="login-column" class="col-md-6">
-                <div id="login-box" class="col-md-12">
-                    <form id="login-form" class="form" action="/postsignIn/" method="post">
-                        {% csrf_token %}
-                        <h1 class="text-center mb-4">เข้าสู่ระบบ MR.REHAB</h1>
-                        <h5 class="text-danger text-center mt-2">{{message}}</h5>
-                        <hr class="my-4">
-                        <div class="mt-1">
-                            <label for="email" class="my-1"><h5>Email:</h5></label><br>
-                            <input type="email" name="email" id="email" class="form-control" name="email" placeholder="xxxxx@mail.com" required>
-                        </div>
-                        <div class="mt-3">
-                            <label for="password" class="my-1"><h5>Password:</h5></label><br>
-                            <input type="password" name="password" id="password" class="form-control" name="password" placeholder="**********" required>
-                        </div>
-                        <div id="register-link" class="text-end my-3">
-                            <a href="/register" class="text-dark mb-3 text-decoration-none">
-                                <h6>Register here</h6>
-                            </a>
-                        </div>
-                        <input class="btn btn-primary form-control" type="submit" value="Login">
-                    </form>
-                </div>
-            </div>
-        </div>
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+  <div class="max-w-md w-full">
+    <!-- Logo/Brand Section -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center h-20 w-20 mb-3">
+        <img src="https://firebasestorage.googleapis.com/v0/b/rehabtesting-9beaf.appspot.com/o/pose%2Ficon.png?alt=media&token=9660bdec-c491-4260-bbe9-dd0395d29380" alt="MR.REHAB Logo" class="h-full w-full object-contain">
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800 tracking-tight">MR.REHAB</h1>
+      <p class="text-gray-500 text-sm mt-1">Physical Therapy Management System</p>
     </div>
+
+    <!-- Login Card with Glass Effect -->
+    <div class="backdrop-blur-lg bg-white/80 rounded-2xl shadow-xl overflow-hidden">
+      <!-- Card Header -->
+      <div class="p-6 pb-0">
+        <h2 class="text-center text-xl font-bold text-gray-900">
+          Sign In
+        </h2>
+        {% if message %}
+        <div class="mt-3 px-4 py-3 bg-red-50 rounded-lg">
+          <p class="text-center text-sm text-red-600 font-medium">
+            {{ message }}
+          </p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Form Section -->
+      <div class="p-6">
+        <form action="/postsignIn/" method="post" class="space-y-5" id="loginForm">
+          {% csrf_token %}
+          
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+              </div>
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                required 
+                autocomplete="email"
+                class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                placeholder="yourname@example.com"
+              >
+            </div>
+          </div>
+          
+          <!-- Password Field -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+              <a href="#" class="text-xs text-blue-600 hover:text-blue-500">Forgot password?</a>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <input 
+                id="password" 
+                name="password" 
+                type="password" 
+                required
+                minlength="8"
+                class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg bg-gray-50 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm"
+                placeholder="••••••••"
+              >
+            </div>
+          </div>
+          
+          <!-- Remember Me Toggle -->
+          <div class="flex items-center">
+            <div class="flex items-center">
+              <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+              <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                Remember me
+              </label>
+            </div>
+          </div>
+          
+          <!-- Submit Button -->
+          <div>
+            <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150 ease-in-out">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M14.243 5.757a6 6 0 10-.986 9.284 1 1 0 111.087 1.678A8 8 0 1118 10a3 3 0 01-4.8 2.401A4 4 0 1114 10a1 1 0 102 0c0-1.537-.586-3.07-1.757-4.243zM12 10a2 2 0 10-4 0 2 2 0 004 0z" clip-rule="evenodd" />
+              </svg>
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Divider -->
+      <div class="relative py-3">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-300"></div>
+        </div>
+        <div class="relative flex justify-center">
+          <span class="px-2 bg-white text-xs text-gray-500 font-medium">or</span>
+        </div>
+      </div>
+      
+      <!-- Registration Link -->
+      <div class="px-6 pb-6 text-center">
+        <p class="text-sm text-gray-600">
+          Don't have an account? 
+          <a href="/register" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+            Register here
+          </a>
+        </p>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="mt-6 text-center text-xs text-gray-500">
+      &copy; 2025 MR.REHAB - Intelligent Physical Therapy Management System
+    </div>
+  </div>
 </div>
-<!--  -->
-{%endblock%}
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    let isValid = true;
+
+    // Email validation
+    if (!email.value || !email.validity.valid) {
+      email.classList.add('border-red-500');
+      isValid = false;
+    } else {
+      email.classList.remove('border-red-500');
+    }
+
+    // Password validation (minimum 8 characters)
+    if (!password.value || password.value.length < 8) {
+      password.classList.add('border-red-500');
+      isValid = false;
+    } else {
+      password.classList.remove('border-red-500');
+    }
+
+    if (!isValid) {
+      e.preventDefault();
+      // Scroll to first error
+      const firstError = document.querySelector('.border-red-500');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+</script>
+{% endblock %}

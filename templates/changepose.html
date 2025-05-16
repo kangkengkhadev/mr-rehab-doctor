@@ -1,82 +1,254 @@
 {% extends 'template.html' %}
-<!--  -->
-{%block title%}Selectpose{%endblock%}
-<!--  -->
-{%block content%}
-<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/doctorpage/">
-            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
+
+{% block title %}Select Physical Therapy Poses{% endblock %}
+
+{% block content %}
+<header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <a href="/doctorpage/" class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold mr-3">
+            {{ request.session.name.0 }}{{ request.session.lastname.0 }}
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Doctor</p>
+            <p class="font-medium text-gray-900">{{request.session.name}} {{request.session.lastname}}</p>
+          </div>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            </ul>
-            <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="btn btn-primary mx-2">เพิ่มข้อมูลผู้ป่วย</a>
-            <a class="btn btn-danger mx-2" href="/deld/">ออกจากระบบ</a>
-        </div>
+      </div>
+      
+      <div class="flex items-center space-x-3">
+        <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-full hover:shadow-lg transition duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+          </svg>
+          Add Patient
+        </a>
+        <a href="/deld/" class="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-full hover:bg-gray-50 hover:shadow-sm transition duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+          </svg>
+          Logout
+        </a>
+      </div>
     </div>
-</nav>
-<h1 class="text-center my-5">เลือกท่ากายภาพบำบัด</h1>
-<div class="container m-auto my-5">
-    <form action="/savechangepose/" method="post" class="">
-        <input type="hidden" name="patient_id" value="{{patient_id}}">
-        <div class="row row-cols-md-5 g-2">
-            {%for p in pose%}
-            <!--  -->
-            {% csrf_token %}
-            <div class="card mx-1">
-                <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
-                <div class="card-body">
-                    <h5 class="card-title">{{p.pose}}</h5>
-                    {%if p.detail%}
-                    <img class="my-3" src={{p.link_img}} width="150" height="150" />
-                    <p class="card-text">{{p.detail}}</p>
-                    {%endif%}
-                    <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}"><br>
-                    <input type="hidden" id="posesum{{p.id}}" name="posesum[]" value="">
-                    <div id="box{{p.id}}" style="display: none;">
-                        <label for="">จำนวนครั้ง/เซ็ท</label>
-                        <input type="text" name="dopose[]" id="do{{p.id}}" value="0" required>
-                        <label for="">จำนวนเซ็ท</label>
-                        <input type="text" name="countpose[]" id="count{{p.id}}" value="0" required>
-                    </div>
-                </div>
-
-            </div>
-            <!--  -->
-            {%endfor%}
+  </div>
+</header>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-6 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Patient Info Banner -->
+    <div class="mb-6 backdrop-blur-lg bg-white/90 rounded-xl p-5 shadow-lg border border-slate-100">
+      <div class="flex flex-wrap items-center pt-2">
+        <div class="flex items-center mr-6 mb-2">
+          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium">{{name}} {{lastname}}</span>
         </div>
-        <input type="submit" value="บันทึก" class="btn btn-primary form-control my-3 py-2">
+        <div class="flex items-center mr-6 mb-2">
+          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium">Age: {{age}} years</span>
+        </div>
+        <div class="flex items-center mr-6 mb-2">
+          <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium">Condition: {{dicease}}</span>
+        </div>
+        <div class="flex items-center mb-2">
+          <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <span class="text-sm font-medium">Treatment Duration: {{month}} months</span>
+        </div>
+      </div>
+    </div>
+
+    {% if had_poses %}
+    <div class="mb-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200 shadow-sm">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+        </svg>
+        <p class="text-yellow-700 text-sm font-medium">{{had_poses}}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Form -->
+    <form id="pose-form" action="/savechangepose/" method="post" novalidate>
+      {% csrf_token %}
+      <!-- Hidden Fields -->
+      <input type="hidden" name="patient_id" value="{{patient_id}}">
+
+      <!-- Section Header -->
+      <div class="mb-6 flex items-center">
+        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900">Select Physical Therapy Poses</h2>
+      </div>
+
+      <!-- Pose Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        {% for p in pose %}
+        <div class="backdrop-blur-lg bg-white/90 rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1 hover:scale-102 border border-slate-100">
+          <div class="p-4">
+            <h3 class="text-lg font-semibold text-center text-gray-800 mb-2">{{p.pose}}</h3>
+            
+            {% if p.detail %}
+            <div class="flex justify-center my-3">
+              <img src="{{p.link_img}}" alt="{{p.pose}}" class="h-32 w-32 object-cover rounded-lg shadow-md" />
+            </div>
+            <p class="text-sm text-gray-600 text-center mb-4 line-clamp-3">{{p.detail}}</p>
+            {% endif %}
+            
+            <!-- Checkbox -->
+            <div class="flex justify-center mb-3">
+              <label class="inline-flex items-center cursor-pointer bg-indigo-50 px-3 py-2 rounded-lg transition-colors hover:bg-indigo-100">
+                <input type="checkbox" onclick="checkbox(this.id)" id="{{p.id}}" name="pose[]" value="{{p.pose}}" class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <span class="ml-2 text-sm font-medium text-gray-700">Select this pose</span>
+              </label>
+              <input type="hidden" id="posesum{{p.id}}" name="posesum[]" value="">
+            </div>
+            
+            <!-- Input Fields (Hidden by Default) -->
+            <div id="box{{p.id}}" style="display: none;" class="rounded-lg bg-indigo-50 p-3 mt-2 shadow-inner">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="do{{p.id}}" class="block text-xs font-medium text-gray-700 mb-1">Reps per Set</label>
+                  <input type="number" min="1" max="100" name="dopose[]" id="do{{p.id}}" value="0" required 
+                    class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                  <div class="text-xs text-red-600 mt-1 hidden" id="do{{p.id}}-error">Enter 1-100 reps</div>
+                </div>
+                <div>
+                  <label for="count{{p.id}}" class="block text-xs font-medium text-gray-700 mb-1">N of Sets</label>
+                  <input type="number" min="1" max="20" name="countpose[]" id="count{{p.id}}" value="0" required 
+                    class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                  <div class="text-xs text-red-600 mt-1 hidden" id="count{{p.id}}-error">Enter 1-20 sets</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-8">
+        <button type="submit" class="w-full inline-flex justify-center items-center py-3 px-6 border border-transparent rounded-lg shadow-md text-base font-medium text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-150 ease-in-out">
+          Save
+        </button>
+      </div>
     </form>
+
+    <!-- Footer -->
+    <div class="mt-10 text-center text-xs text-gray-500">
+      &copy; 2025 MR.REHAB - Intelligent Physical Therapy Management System
+    </div>
+  </div>
 </div>
-{%if had_pose%} {%for i in had_pose%}
-<script>
-    document.getElementById('{{i.id}}').checked = true;
-    document.getElementById('box' + '{{i.id}}').style.display = 'block';
-    document.getElementById('do' + '{{i.id}}').value = '{{i.dopose}}';
-    document.getElementById('count' + '{{i.id}}').value = '{{i.countpose}}';
-</script>
-
-{%endfor%} {%endif%}
 
 <script>
-    function checkbox(id) {
-        var x = document.getElementById(id).checked;
-        if (x != true) {
-            document.getElementById('box' + id).style.display = 'none';
-            document.getElementById('do' + id).value = 0;
-            document.getElementById('count' + id).value = 0;
-
-        } else {
-            document.getElementById('box' + id).style.display = 'block';
-            document.getElementById('do' + id).value = 5;
-            document.getElementById('count' + id).value = 3;
-        }
-        document.getElementById('posesum' + id).value = document.getElementById(id).value + "/" + document.getElementById('count' + id).value + "/" + document.getElementById('do' + id).value
+  function checkbox(id) {
+    var x = document.getElementById(id).checked;
+    if (x != true) {
+      document.getElementById('box' + id).style.display = 'none';
+      document.getElementById('do' + id).value = 0;
+      document.getElementById('count' + id).value = 0;
+    } else {
+      document.getElementById('box' + id).style.display = 'block';
+      document.getElementById('do' + id).value = 5;
+      document.getElementById('count' + id).value = 3;
     }
+    document.getElementById('posesum' + id).value = document.getElementById(id).value + "/" + document.getElementById('count' + id).value + "/" + document.getElementById('do' + id).value
+  }
+
+  // Form validation
+  document.getElementById('pose-form').addEventListener('submit', function(e) {
+    let isValid = true;
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name="pose[]"]:checked');
+    
+    // Validate at least one pose is selected
+    if (checkboxes.length === 0) {
+      alert('Please select at least one physical therapy pose');
+      isValid = false;
+    }
+    
+    // Validate reps and sets for selected poses
+    checkboxes.forEach(checkbox => {
+      const id = checkbox.id;
+      const reps = document.getElementById('do' + id);
+      const sets = document.getElementById('count' + id);
+      
+      if (reps.value < 1 || reps.value > 100) {
+        document.getElementById('do' + id + '-error').classList.remove('hidden');
+        reps.classList.add('border-red-500');
+        isValid = false;
+      } else {
+        document.getElementById('do' + id + '-error').classList.add('hidden');
+        reps.classList.remove('border-red-500');
+      }
+      
+      if (sets.value < 1 || sets.value > 20) {
+        document.getElementById('count' + id + '-error').classList.remove('hidden');
+        sets.classList.add('border-red-500');
+        isValid = false;
+      } else {
+        document.getElementById('count' + id + '-error').classList.add('hidden');
+        sets.classList.remove('border-red-500');
+      }
+    });
+    
+    if (!isValid) {
+      e.preventDefault();
+      // Scroll to first error
+      const firstError = document.querySelector('[id$="-error"]:not(.hidden)');
+      if (firstError) {
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+
+  // Real-time validation for inputs
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', function() {
+      const id = this.id;
+      const errorElement = document.getElementById(id + '-error');
+      
+      if (this.value < this.min || this.value > this.max) {
+        errorElement.classList.remove('hidden');
+        this.classList.add('border-red-500');
+      } else {
+        errorElement.classList.add('hidden');
+        this.classList.remove('border-red-500');
+      }
+    });
+  });
 </script>
-<!--  -->
-{%endblock%}
+
+{% if had_pose %}
+{% for i in had_pose %}
+<script>
+  document.getElementById('{{i.id}}').checked = true;
+  document.getElementById('box' + '{{i.id}}').style.display = 'block';
+  document.getElementById('do' + '{{i.id}}').value = '{{i.dopose}}';
+  document.getElementById('count' + '{{i.id}}').value = '{{i.countpose}}';
+  document.getElementById('posesum' + '{{i.id}}').value = '{{i.pose}}/{{i.countpose}}/{{i.dopose}}';
+</script>
+{% endfor %}
+{% endif %}
+{% endblock %}

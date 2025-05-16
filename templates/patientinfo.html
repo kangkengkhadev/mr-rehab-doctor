@@ -1,152 +1,452 @@
 {% extends 'template.html' %}
-<!--  -->
-{%block title%}Info{%endblock%}
-<!--  -->
-{%block content%}
-<style>
-    .liney {
-        font-size: 20px;
-        padding: 0 50px;
-        border-right: 1px solid rgb(97, 97, 97);
+
+{% block title %}Patient Information{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <a href="/doctorpage/" class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold mr-3">
+              {{ request.session.name.0 }}{{ request.session.lastname.0 }}
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Doctor</p>
+              <p class="font-medium text-gray-900">{{request.session.name|default:'Username'}} {{request.session.lastname|default:'Lastname'}}</p>
+            </div>
+          </a>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          {% if info.patient_id %}
+          <a href="/changepatientinfo/?pid={{info.patient_id}}" 
+             class="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-medium rounded-full hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+            Edit Patient Info
+          </a>
+          {% else %}
+          <span class="flex items-center px-4 py-2 bg-gray-300 text-gray-500 font-medium rounded-full cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+            No Patient Found
+          </span>
+          {% endif %}
+          
+          <a href="/doctorpage" class="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-full hover:bg-gray-50 hover:shadow-sm transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 pt-6 pb-12">
+    <!-- Error handling and empty state -->
+    {% if info and info.patient_id %}
+    <!-- Patient Info Card -->
+    <div class="mb-8">
+      <div class="backdrop-blur-lg bg-white/90 rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+        <div class="p-1">
+          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-4 rounded-xl">
+            <div class="flex items-center">
+              <div class="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold">{{info.name|default:'[No Name]'}} {{info.lastname|default:'[No Lastname]'}}</h2>
+                <p class="text-blue-100">Patient #{{info.patient_id}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+          <!-- Personal Info Column -->
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">First Name</p>
+                <p class="font-medium">{{info.name|default:'-'}}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Last Name</p>
+                <p class="font-medium">{{info.lastname|default:'-'}}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Gender</p>
+                <p class="font-medium">{{info.gender|default:'-'}}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Medical Info Column -->
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Age</p>
+                <p class="font-medium">{{info.age|default:'-'}}{% if info.age %} years{% endif %}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Condition</p>
+                <p class="font-medium">{{info.dicease|default:'-'}}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Treatment Duration</p>
+                <p class="font-medium">{{info.month|default:'-'}}{% if info.month %} months{% endif %}</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Contact Info Column -->
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Phone Number</p>
+                <p class="font-medium">{{info.phone|default:'-'}}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">LINE ID</p>
+                <p class="font-medium">{{info.line_id|default:'-'}}</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center">
+              <div class="w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Emergency Contact</p>
+                <p class="font-medium">{{info.kin_contact|default:'-'}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col lg:flex-row gap-6">
+      <!-- Left Column - Exercise List -->
+      <div class="w-full lg:w-1/3">
+        <div class="backdrop-blur-lg bg-white/90 rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+          <div class="p-1">
+            <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-4 py-3 rounded-xl">
+              <h2 class="text-lg font-bold text-center">Physical Therapy Poses</h2>
+            </div>
+          </div>
+          
+          <div class="p-4">
+            {% if info.poses %}
+            <div class="h-96 overflow-y-auto pr-2 space-y-3">
+              {% for i in info.poses %}
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:shadow-md transition-all duration-300 hover:border-indigo-100">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" />
+                      </svg>
+                    </div>
+                    <h4 class="font-medium">{{i.pose|default:'-'}}</h4>
+                  </div>
+                  <div class="bg-indigo-50 rounded-full px-3 py-1 text-sm text-indigo-700 font-medium">
+                    {{i.dopose|default:'0'}} reps / {{i.countpose|default:'0'}} sets
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="h-96 flex items-center justify-center">
+              <div class="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p class="text-gray-500">No physical therapy poses assigned</p>
+              </div>
+            </div>
+            {% endif %}
+            
+            <a href="/changepose/?patient_id={{info.patient_id}}" 
+               class="mt-6 inline-block w-full px-4 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-medium text-center rounded-full hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+              <div class="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                {% if info.poses %}Edit{% else %}Add{% endif %} Poses
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column - Charts -->
+      <div class="w-full lg:w-2/3">
+        <div class="backdrop-blur-lg bg-white/90 rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+          <div class="p-1">
+            <div class="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-4 py-3 rounded-xl">
+              {% if rehabinfo == 0 %}
+              <h2 class="text-lg font-bold text-center">No data available this month</h2>
+              {% else %}
+              <h2 class="text-lg font-bold text-center">Physical Therapy Data for {{month_name|default:'current'}} month</h2>
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="p-6">
+            <form action="/patientinfo" method="get" class="mb-6">
+              <input type="hidden" name="pid" value="{{pid}}">
+              <div class="flex items-center justify-center space-x-3 max-w-xs mx-auto">
+                <select name="selectmonth" class="block w-full rounded-full border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-700">
+                  {% if rehabinfo != 0 %}
+                  <option value="{{thismonth}}">{{thismonth}}</option>
+                  {% endif %}
+                  {% for i in month_id %}
+                  <option value="{{i}}">{{i}}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                  </svg>
+                  Select Month
+                </button>
+              </div>
+            </form>
+            
+            <div class="w-full">
+              <canvas id="sumChart" class="w-full h-80"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detailed Charts Section -->
+    {% if rehabinfo != 0 %}
+    <div class="mt-8 backdrop-blur-lg bg-white/90 rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+      <div class="p-1">
+        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-xl">
+          <h2 class="text-lg font-bold text-center">Individual Pose Data</h2>
+        </div>
+      </div>
+      
+      <div class="p-6">
+        <div id="subpose" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+          <!-- Individual charts will be injected here by JavaScript -->
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- Empty State -->
+    <div class="flex flex-col items-center justify-center min-h-[60vh]">
+      <div class="text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="text-xl font-medium text-gray-900 mb-2">Patient not found</h3>
+        <p class="text-gray-500 mb-4">Please select a patient or check the ID</p>
+        <a href="/doctorpage" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gradient-to-r from-blue-500 to-indigo-600 hover:shadow-lg transition-all duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+          </svg>
+          Back to Dashboard
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script type='text/javascript'>
+    // Safe JSON parsing with try-catch
+    let sum_x, sum_y, detail;
+    try {
+        sum_x = JSON.parse('{{evo_date_day|escapejs}}');
+        sum_y = JSON.parse('{{sum_evo_in_day|escapejs}}');
+        detail = JSON.parse('{{subclass_evo_in_day|escapejs}}');
+    } catch (e) {
+        console.error('Error parsing JSON data:', e);
+        sum_x = [];
+        sum_y = [];
+        detail = {};
     }
     
-    .liney:first-child {
-        padding-left: 0;
+    // Safe chart creation
+    function createChart(ctx, config) {
+        try {
+            return new Chart(ctx, config);
+        } catch (e) {
+            console.error('Error creating chart:', e);
+            return null;
+        }
     }
-</style>
-<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            </ul>
-            <a href="/changepatientinfo/?pid={{info.patient_id}}" class="btn btn-info mx-2 text-light">แก้ไขข้อมูลผู้ป่วย</a>
-            <a href="/doctorpage" class="btn btn-primary mx-2">กลับหน้าหลัก</a>
-        </div>
-    </div>
-</nav>
+    
+    // Individual pose charts
+    if (detail && Object.keys(detail).length > 0) {
+        let index_g = 0;
+        for (const [key, value] of Object.entries(detail)) {
+            index_g += 1;
+            let dive = document.createElement("div");
+            dive.className = "bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm";
+            
+            let chartContainer = document.createElement("div");
+            chartContainer.className = "individual-chart-container h-[280px]";
+            
+            let x = document.createElement("CANVAS");
+            let x_title = document.createElement("h3");
+            
+            dive.id = 'pose' + index_g.toString();
+            x_title.textContent = key;
+            x_title.className = "text-lg font-medium text-center mb-4 text-gray-800";
+            
+            x.id = index_g.toString();
+            
+            const subposeContainer = document.getElementById('subpose');
+            if (subposeContainer) {
+                subposeContainer.appendChild(dive);
+                document.getElementById('pose' + index_g.toString()).appendChild(x_title);
+                document.getElementById('pose' + index_g.toString()).appendChild(chartContainer);
+                chartContainer.appendChild(x);
+                
+                createChart(x, {
+                    type: "line",
+                    data: {
+                        labels: sum_x,
+                        datasets: [{
+                            data: Array.isArray(value) ? value : [],
+                            borderColor: "rgba(79, 70, 229, 1)",
+                            backgroundColor: "rgba(79, 70, 229, 0.1)",
+                            borderWidth: 2,
+                            tension: 0.2,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "Percentage of assigned physical therapy sessions completed each day over 1 month",
+                            fontSize: 14
+                        },
+                        scales: {
+                            yAxes: [{
+                                display: true,
+                                ticks: {
+                                    beginAtZero: true,
+                                    steps: 30,
+                                    stepValue: 5,
+                                    max: 100
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+        }
+    }
 
-
-<header class="container-fluid" style="background-color:rgb(217, 252, 232)">
-    <div class="">
-        <div class="px-4 py-4 d-flex ">
-            <div class="personal liney">
-                ชื่อ : {{info.name}}<br> นามสกุล : {{info.lastname}}<br> เพศ : {{info.gender}}<br>
-            </div>
-            <div class="decinfo liney">
-                อายุ : {{info.age}} <br> ป่วยจากโรค : {{info.dicease}}<br> ระยะเวลาในการรักษา : {{info.month}} เดือน
-            </div>
-            <div class="contact liney">
-                เบอร์โทรศัพท์ผู้ป่วย : {{info.phone}}<br> ID_LINE : {{info.line_id}} <br> เบอร์ติดต่อญาติ : {{info.kin_contact}}
-            </div>
-        </div>
-    </div>
-</header>
-
-
-<main class='p-4 d-flex'>
-    <div class="me-4" style="width:30%;">
-        <h2 class="text-center mb-3">ท่ากายภาพบำบัด</h2>
-        <div class="float-start" style="width:100%;height:450px; overflow-y:scroll">
-
-            {%for i in info.poses%}
-            <!--  -->
-            <div class="card me-5 px-5 py-4 my-2 w-100">
-                <h4 class="float-start w-75">{{i.pose}}</h3>
-                <h5 class="float-end w-75">{{i.dopose}}ครั้ง/{{i.countpose}}เซ็ท</h4>
-            </div>
-            <!--  -->
-            {%endfor%}
-        </div>
-        <a href="/changepose/?patient_id={{info.patient_id}}" class="btn btn-info form-control py-2 my-4 text-light mt-5">แก้ไข</a>
-    </div>
-    <div class="">
-        {%if rehabinfo == 0%}
-        <h3 class="text-center">ไม่มีข้อมูลในเดือนนี้</h3>
-        <form action="/patientinfo" style="font-size: 15px;" method="get">
-            <input type="hidden" name="pid" value="{{pid}}">
-            <div class="d-flex w-25 mx-auto">
-                <select name="selectmonth" class="form-select">
-                    {%for i in month_id%}
-                  <option value="{{i}}">{{i}}</option>
-                  {%endfor%}
-                </select>
-                <input type="submit" value="เลือกเดือน" class="btn btn-primary mx-2">
-            </div>
-        </form>
-        {%else%}
-        <div class="">
-            <h2 class="text-center mb-3">ข้อมูลกายภาพบำบัดของเดือน{{month_name}} </h2>
-            <form action="/patientinfo" style="font-size: 15px;" method="get">
-                <input type="hidden" name="pid" value="{{pid}}">
-                <div class="d-flex w-25 mx-auto">
-                    <select name="selectmonth" class="form-select">
-                        <option value="{{thismonth}}">{{thismonth}}</option>
-                        {%for i in month_id%}
-                      <option value="{{i}}">{{i}}</option>
-                      {%endfor%}
-                    </select>
-                    <input type="submit" value="เลือกเดือน" class="btn btn-primary mx-2">
-                </div>
-            </form>
-        </div>
-        {%endif%}
-        <canvas id="sumChart" style="max-width:890px; margin: 20px auto;height: 500px;margin-bottom: 0px;"></canvas>
-    </div>
-</main>
-{%if rehabinfo != 0%}
-<div class="deep py-2 px-5 w-100">
-    <h2 class="text-center">ข้อมูลของท่าแต่ละท่า</h2>
-    <br>
-    <hr>
-    <div id="subpose" class="text-center mt-5" style="display: grid;grid-template-columns: repeat(3, 1fr);gap: 3rem;">
-    </div>
-</div>
-{%endif%}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-</script>
-<script type='text/javascript'>
-    let sum_x = JSON.parse('{{evo_date_day|escapejs}}');
-    let sum_y = JSON.parse('{{sum_evo_in_day|escapejs}}');
-    console.log(sum_x, sum_y)
-    let detail = JSON.parse('{{subclass_evo_in_day|escapejs}}');
-    // console.log(datail);
-    index_g = 0
-    for (const [key, value] of Object.entries(detail)) {
-        console.log(key);
-        index_g += 1;
-        let dive = document.createElement("div");
-        let x = document.createElement("CANVAS");
-        let x_title = document.createElement("h3");
-        dive.id = 'pose' + index_g.toString()
-        x_title.textContent = key;
-        x.id = index_g.toString()
-        x_title.style = 'margin-bottom:0px;'
-        x.style = "max-width:100%;margin: 20px auto;height: 350px;margin-bottom: 0px;"
-        document.getElementById('subpose').appendChild(dive);
-        document.getElementById('pose' + index_g.toString()).appendChild(x_title);
-        document.getElementById('pose' + index_g.toString()).appendChild(x);
-        new Chart(index_g.toString(), {
+    // Main summary chart
+    const sumChartCanvas = document.getElementById("sumChart");
+    if (sumChartCanvas) {
+        createChart(sumChartCanvas, {
             type: "line",
             data: {
                 labels: sum_x,
                 datasets: [{
-                    data: value
+                    data: sum_y,
+                    borderColor: "rgba(6, 182, 212, 1)",
+                    backgroundColor: "rgba(6, 182, 212, 0.1)",
+                    borderWidth: 3,
+                    tension: 0.2,
+                    fill: true
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 legend: {
                     display: false
-
                 },
                 title: {
                     display: true,
-                    text: "แสดงร้อยละของจำนวนครั้งการทำกายภาพบำบัดที่ได้รับมอบหมายในแต่ละวันตลอด1เดือน"
+                    text: "Percentage of assigned physical therapy sessions completed each day over 1 month",
+                    fontSize: 14
                 },
                 scales: {
                     yAxes: [{
@@ -162,36 +462,10 @@
             }
         });
     }
-
-
-    new Chart("sumChart", {
-        type: "line",
-        data: {
-            labels: sum_x,
-            datasets: [{
-                data: sum_y
-            }]
-        },
-        options: {
-            legend: {
-                display: false
-            },
-            title: {
-                display: true,
-                text: "แสดงร้อยละของจำนวนครั้งการทำกายภาพบำบัดที่ได้รับมอบหมายในแต่ละวันตลอด1เดือน"
-            },
-            scales: {
-                yAxes: [{
-                    display: true,
-                    ticks: {
-                        beginAtZero: true,
-                        steps: 10,
-                        stepValue: 5,
-                        max: 100
-                    }
-                }]
-            }
-        }
+    
+    // Handle responsive charts
+    window.addEventListener('resize', () => {
+        // Charts will automatically resize thanks to responsive: true option
     });
 </script>
-{%endblock%}
+{% endblock %}

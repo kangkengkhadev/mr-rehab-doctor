@@ -1,112 +1,259 @@
 {% extends 'template.html' %}
-<!--  -->
-{%block title%}Doctorpage{%endblock%}
-<!--  -->
-{%block content%}
-<nav class="navbar navbar-expand-lg navbar-light bg-light px-4 py-2 ">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/doctorpage/">
-            <h2>คุณหมอ {{request.session.name}} {{request.session.lastname}}</h2>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            </ul>
-            <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="btn btn-primary mx-2">เพิ่มข้อมูลผู้ป่วย</a>
-            <a class="btn btn-danger mx-2" href="/deld/">ออกจากระบบ</a>
+
+{% block title %}Patient List{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+  <!-- Top Navigation Bar with glass effect -->
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <a href="/doctorpage/" class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold mr-3">
+              {{ request.session.name.0 }}{{ request.session.lastname.0 }}
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Doctor</p>
+              <p class="font-medium text-gray-900">{{request.session.name}} {{request.session.lastname}}</p>
+            </div>
+          </a>
         </div>
+        
+        <div class="flex items-center space-x-3">
+          <a href="/addpatientdata/?uid={{doctor_info.uid}}" class="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-full hover:shadow-lg transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+            </svg>
+            Add Patient
+          </a>
+          <a href="/deld/" class="flex items-center px-4 py-2 border border-gray-300 text-gray-700 bg-white rounded-full hover:bg-gray-50 hover:shadow-sm transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+            </svg>
+            Logout
+          </a>
+        </div>
+      </div>
     </div>
-</nav>
-<div class="w-100 px-5">
-    <h2 class="text-center my-5 mb-3">รายชื่อผู้ป่วย</h2>
-    <div class="d-flex justify-content-center my-5 mt-4">
-        <form action="/doctorpage" method="get" class="form-inline d-flex justify-content-between">
-            <input name="search" style="width:420px" class="form-control mr-sm-2" type="search" placeholder="ค้นหาจากชื่อ รหัสการรักษา หรือ รหัสประจำตัวผู้ป่วย " aria-label="Search">
-            <input class="btn btn-primary my-2 my-sm-0 ms-1" type="submit" value="ค้นหา"/>
+  </header>
+
+  <!-- Search Section with Floating Card -->
+  <div class="max-w-7xl mx-auto px-4 pt-8">
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4 md:mb-0">Patient List</h2>
+        
+        <form action="/doctorpage" method="get" class="w-full md:w-auto">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input
+              name="search"
+              type="search"
+              class="w-full md:w-80 pl-10 pr-16 py-2 border-0 ring-1 ring-gray-300 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="Search by name, treatment ID, or patient ID"
+              pattern="[A-Za-z0-9\s\-]+"
+              title="Please enter letters, numbers, or hyphens"
+            />
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <button type="submit" class="px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Search
+              </button>
+            </div>
+          </div>
         </form>
+      </div>
+      
+      <!-- Modern Table Section -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HOSPITAL NUMBER</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Treatment ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% if request.GET.search %}
+              {% for mem in data %}
+                {% if mem.status == 'active' %}
+                  {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                            {{ mem.name.0 }}{{ mem.lastname.0 }}
+                          </div>
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">{{ mem.name }} {{ mem.lastname }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.hospital_number }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.dicease }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.patient_id }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                          Active Therapy
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="/patientinfo/?pid={{mem.patient_id}}" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-full">View Details</a>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% elif mem.status != 'active' %}
+                  {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id %}
+                    <tr class="bg-gray-50 text-gray-400">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                            {{ mem.name.0 }}{{ mem.lastname.0 }}
+                          </div>
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-500">{{ mem.name }} {{ mem.lastname }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.hospital_number }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.dicease }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.patient_id }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-500">
+                          Pending
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <span class="text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Not Available</span>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% for mem in data %}
+                {% if mem.status == 'active' %}
+                  <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">
+                          {{ mem.name.0 }}{{ mem.lastname.0 }}
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">{{ mem.name }} {{ mem.lastname }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.hospital_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.dicease }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ mem.patient_id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active Therapy
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <a href="/patientinfo/?pid={{mem.patient_id}}" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-full">View Details</a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr class="bg-gray-50 text-gray-400">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">
+                          {{ mem.name.0 }}{{ mem.lastname.0 }}
+                        </div>
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-500">{{ mem.name }} {{ mem.lastname }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.hospital_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.dicease }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{{ mem.patient_id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-500">
+                        Pending
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <span class="text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Not Available</span>
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="py-3 flex items-center justify-between border-t border-gray-200">
+        <div class="flex-1 flex justify-between sm:hidden">
+          <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Previous
+          </a>
+          <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Next
+          </a>
+        </div>
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Showing
+              <span class="font-medium">1</span>
+              to
+              <span class="font-medium">{{ data|length }}</span>
+              of
+              <span class="font-medium">{{ data|length }}</span>
+              results
+            </p>
+          </div>
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                1
+              </a>
+              <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            </nav>
+          </div>
+        </div>
+      </div>
     </div>
-    {%if request.GET.search%}
-    <div class="row row-cols-1 row-cols-md-4 g-4">
-        {%for mem in data%}
-        <!--  -->
-        {% csrf_token %}
-        <!--  -->
-        {%if mem.status == 'active'%}
-        {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id%}
-        <a href="/patientinfo/?pid={{mem.patient_id}}" style="text-decoration: none;color:black;">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
-                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title" style="font-size:18px">สถานะ: ระหว่างการทำกายภาพบำบัด</h5>
-                    <h5 class="card-title" style="font-size:18px"></h5>
-                </div>
-            </div>
-        </a>
-        {%endif%}
-        {%elif mem.status != 'active'%}
-        {% if request.GET.search in mem.name or request.GET.search in mem.lastname or request.GET.search in mem.hospital_number or request.GET.search in mem.patient_id%}
-        <a href="/doctorpage/" class="text-secondary" style="text-decoration: none;color:black;">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
-                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title" style="font-size:18px">สถานะ: รอการดำเนินการ</h5>
-                    <h5 class="card-title" style="font-size:18px"></h5>
-                </div>
-            </div>
-        </a>
-        {%endif%}
-        {%endif%}
-        <!--  -->
-        {%endfor%}
-    </div>
-    {%else%}
-    <div class="row row-cols-1 row-cols-md-4 g-4">
-        {%for mem in data%}
-        <!--  -->
-        {% csrf_token %}
-        <!--  -->
-        {%if mem.status == 'active' %}
-        <a href="/patientinfo/?pid={{mem.patient_id}}" style="text-decoration: none;color:black;">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
-                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title" style="font-size:18px">สถานะ: ระหว่างการทำกายภาพบำบัด</h5>
-                    <h5 class="card-title" style="font-size:18px"></h5>
-                </div>
-            </div>
-        </a>
-        {%else%}
-        <a href="/doctorpage/" class="text-secondary" style="text-decoration: none;color:black;">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-size:18px">ชื่อ-นามสกุล: {{mem.name}} {{mem.lastname}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสประจำตัวคนไข้: {{mem.hospital_number}}</h5>
-                    <h5 class="card-title" style="font-size:18px">โรค: {{mem.dicease}}</h5>
-                    <h5 class="card-title" style="font-size:18px">รหัสการรักษา: {{mem.patient_id}}</h5>
-                    <h5 class="card-title" style="font-size:18px">สถานะ: รอการดำเนินการ</h5>
-                    <h5 class="card-title" style="font-size:18px"></h5>
-                </div>
-            </div>
-        </a>
-        {%endif%}
-        <!--  -->
-        {%endfor%}
-    </div>
-    {%endif%}
-    
+  </div>
 </div>
 
-
-<!--  -->
-{%endblock%}
+<script>
+  // Search input validation
+  const searchForm = document.querySelector('form[action="/doctorpage"]');
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+      const searchInput = this.querySelector('input[name="search"]');
+      if (searchInput && searchInput.value.trim() === '') {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.classList.add('border-red-500');
+      }
+    });
+  }
+</script>
+{% endblock %}
