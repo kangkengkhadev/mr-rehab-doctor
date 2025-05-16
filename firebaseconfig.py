@@ -9,13 +9,6 @@ db = firestore.client()
 
 # Pyrebase (for Auth and Realtime Database access)
 config = {
-  'apiKey': "AIzaSyBPnNnDyGcZmG4Cq-kr3edVwQe5AwthqIE",
-  'authDomain': "rehabtesting-9beaf.firebaseapp.com",
-  'databaseURL': "https://rehabtesting-9beaf-default-rtdb.asia-southeast1.firebasedatabase.app",
-  'projectId': "rehabtesting-9beaf",
-  'storageBucket': "rehabtesting-9beaf.appspot.com",
-  'messagingSenderId': "737840427844",
-  'appId': "1:737840427844:web:4d934ef2d192ac371ddd11",
 }
 firebase = pyrebase.initialize_app(config)
 authe = firebase.auth()
